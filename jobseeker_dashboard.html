@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NexHire — Job Seeker Dashboard</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+</head>
+<body class="dashboard-body">
+
+  <div class="bg-orbs dashboard-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+  </div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <i class="fa-solid fa-bolt-lightning brand-icon"></i>
+      <span>NexHire</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="#" class="sidebar-link active" onclick="showSection('jobs',this)">
+        <i class="fa-solid fa-briefcase"></i> Browse Jobs
+      </a>
+      <a href="#" class="sidebar-link" onclick="showSection('applications',this)">
+        <i class="fa-solid fa-file-lines"></i> My Applications
+      </a>
+      <a href="#" class="sidebar-link" onclick="showSection('profile',this)">
+        <i class="fa-solid fa-user-circle"></i> My Profile
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="su-avatar" id="suAvatar">J</div>
+        <div>
+          <div class="su-name" id="suName">Job Seeker</div>
+          <div class="su-role">Job Seeker</div>
+        </div>
+      </div>
+      <button class="btn-logout" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Sign Out</button>
+    </div>
+  </aside>
+
+  <!-- Mobile Top Bar -->
+  <div class="mobile-topbar">
+    <button id="sidebarToggle"><i class="fa-solid fa-bars"></i></button>
+    <div class="nav-brand"><i class="fa-solid fa-bolt-lightning brand-icon"></i> NexHire</div>
+    <div id="mobileAvatar" class="su-avatar" style="margin:0">J</div>
+  </div>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Main Content -->
+  <main class="dashboard-main">
+
+    <!-- BROWSE JOBS SECTION -->
+    <section id="section-jobs" class="dash-section">
+      <div class="dash-header">
+        <div>
+          <h1 class="dash-title">Hello, <span id="seekerName">there</span> 👋</h1>
+          <p class="dash-sub">Discover your next opportunity from thousands of open roles.</p>
+        </div>
+      </div>
+
+      <!-- Search & Filters -->
+      <div class="search-bar-wrap">
+        <div class="search-bar">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="jobSearch" placeholder="Search jobs, companies, locations..."/>
+        </div>
+        <div class="filter-chips">
+          <button class="chip active" onclick="filterJobs('all',this)">All</button>
+          <button class="chip" onclick="filterJobs('Full-time',this)">Full-time</button>
+          <button class="chip" onclick="filterJobs('Remote',this)">Remote</button>
+          <button class="chip" onclick="filterJobs('Internship',this)">Internship</button>
+          <button class="chip" onclick="filterJobs('Contract',this)">Contract</button>
+        </div>
+      </div>
+
+      <!-- Job Results Count -->
+      <div class="results-count" id="resultsCount">Loading jobs...</div>
+
+      <!-- Jobs Grid -->
+      <div id="jobsGrid" class="jobs-grid">
+        <div class="loading-state"><i class="fa-solid fa-circle-notch fa-spin"></i> Fetching jobs for you...</div>
+      </div>
+    </section>
+
+    <!-- MY APPLICATIONS SECTION -->
+    <section id="section-applications" class="dash-section hidden">
+      <div class="dash-header">
+        <h1 class="dash-title">My Applications</h1>
+        <p class="dash-sub">Track the status of your job applications.</p>
+      </div>
+      <div id="applicationsList" class="applications-list">
+        <div class="loading-state"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading your applications...</div>
+      </div>
+    </section>
+
+    <!-- PROFILE SECTION -->
+    <section id="section-profile" class="dash-section hidden">
+      <div class="dash-header">
+        <h1 class="dash-title">My Profile</h1>
+        <p class="dash-sub">Your account information.</p>
+      </div>
+      <div class="profile-card">
+        <div class="profile-avatar" id="profileAvatar">J</div>
+        <div class="profile-info">
+          <div class="profile-name" id="profileName">—</div>
+          <div class="profile-email" id="profileEmail">—</div>
+          <div class="badge badge-type" style="margin-top:0.5rem">Job Seeker</div>
+        </div>
+        <div class="profile-stats">
+          <div><strong id="pStatApps">0</strong><span>Applications</span></div>
+          <div><strong id="pStatJobs">0</strong><span>Available Jobs</span></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Job Detail Modal -->
+  <div class="modal-overlay hidden" id="modalOverlay">
+    <div class="modal-card" id="modalCard">
+      <button class="modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast hidden"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, collection, addDoc, query, where, getDocs, orderBy, serverTimestamp }
+      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { firebaseConfig } from "./firebase-config.js";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    let currentUser = null;
+    let allJobs = [];
+    let appliedJobIds = new Set();
+    let activeFilter = 'all';
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) { window.location.href = 'login.html'; return; }
+      const snap = await getDoc(doc(db, 'users', user.uid));
+      if (!snap.exists()) { window.location.href = 'role_select.html'; return; }
+      if (snap.data().role === 'employer') { window.location.href = 'employer_dashboard.html'; return; }
+
+      currentUser = user;
+      const name = snap.data().name || user.displayName || 'there';
+      const initial = name.charAt(0).toUpperCase();
+      document.getElementById('seekerName').textContent = name.split(' ')[0];
+      document.getElementById('suName').textContent = name;
+      document.getElementById('suAvatar').textContent = initial;
+      document.getElementById('mobileAvatar').textContent = initial;
+      document.getElementById('profileAvatar').textContent = initial;
+      document.getElementById('profileName').textContent = name;
+      document.getElementById('profileEmail').textContent = user.email;
+
+      await loadAppliedJobs();
+      await loadJobs();
+    });
+
+    async function loadAppliedJobs() {
+      const q = query(collection(db, 'applications'), where('userId', '==', currentUser.uid));
+      const snap = await getDocs(q);
+      snap.forEach(d => appliedJobIds.add(d.data().jobId));
+      document.getElementById('pStatApps').textContent = appliedJobIds.size;
+    }
+
+    async function loadJobs() {
+      try {
+        const q = query(collection(db, 'jobs'), orderBy('createdAt', 'desc'));
+        const snap = await getDocs(q);
+        allJobs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        document.getElementById('pStatJobs').textContent = allJobs.length;
+        renderJobs(allJobs);
+      } catch (err) {
+        document.getElementById('jobsGrid').innerHTML =
+          `<div class="empty-state"><i class="fa-solid fa-circle-exclamation"></i><p>Error loading jobs: ${err.message}</p></div>`;
+      }
+    }
+
+    window.renderJobs = (jobs) => {
+      const grid = document.getElementById('jobsGrid');
+      document.getElementById('resultsCount').textContent =
+        jobs.length === 0 ? 'No jobs found' : `${jobs.length} job${jobs.length > 1 ? 's' : ''} found`;
+      if (!jobs.length) {
+        grid.innerHTML = `<div class="empty-state"><i class="fa-solid fa-binoculars"></i><p>No jobs match your search. Try different keywords.</p></div>`;
+        return;
+      }
+      grid.innerHTML = jobs.map(job => {
+        const applied = appliedJobIds.has(job.id);
+        const colors = ['#6366f1','#f59e0b','#10b981','#ec4899','#3b82f6'];
+        const clr = colors[job.company.charCodeAt(0) % colors.length];
+        return `
+          <div class="job-card seeker-job-card" style="animation-delay:${Math.random()*0.3}s">
+            <div class="jc-top">
+              <div class="jc-logo" style="background:${clr}">${job.company.charAt(0)}</div>
+              <div class="jc-badges">
+                <span class="badge badge-type">${job.type || 'Full-time'}</span>
+                ${applied ? '<span class="badge badge-applied"><i class="fa-solid fa-check"></i> Applied</span>' : ''}
+              </div>
+            </div>
+            <h3 class="jc-title">${job.title}</h3>
+            <div class="jc-company">${job.company}</div>
+            <div class="jc-meta">
+              <span><i class="fa-solid fa-location-dot"></i> ${job.location}</span>
+              <span><i class="fa-solid fa-sack-dollar"></i> ${job.salary}</span>
+            </div>
+            <p class="jc-desc">${job.description.substring(0, 120)}...</p>
+            <div class="jc-footer">
+              <span class="jc-date"><i class="fa-regular fa-calendar"></i> ${formatDate(job.createdAt)}</span>
+              <div class="jc-actions">
+                <button class="btn btn-ghost btn-sm" onclick="openModal(${JSON.stringify(job).replace(/"/g,'&quot;')})">
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i> View
+                </button>
+                <button class="btn ${applied ? 'btn-applied' : 'btn-primary'} btn-sm apply-btn" 
+                  id="apply-${job.id}" 
+                  ${applied ? 'disabled' : ''}
+                  onclick="applyJob('${job.id}','${job.title}','${job.company}','${job.employerId || ''}')">
+                  ${applied ? '<i class="fa-solid fa-check"></i> Applied' : '<i class="fa-solid fa-paper-plane"></i> Apply'}
+                </button>
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+    };
+
+    window.applyJob = async (jobId, title, company, employerId) => {
+      const btn = document.getElementById(`apply-${jobId}`);
+      if (!btn || appliedJobIds.has(jobId)) return;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Applying...';
+      try {
+        await addDoc(collection(db, 'applications'), {
+          userId: currentUser.uid,
+          userName: currentUser.displayName || 'Anonymous',
+          userEmail: currentUser.email,
+          jobId, jobTitle: title, company, employerId,
+          status: 'Pending',
+          appliedAt: serverTimestamp()
+        });
+        appliedJobIds.add(jobId);
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> Applied';
+        btn.className = 'btn btn-applied btn-sm';
+        showToast(`🎉 Applied to ${title} at ${company}!`);
+        document.getElementById('pStatApps').textContent = appliedJobIds.size;
+        loadApplications();
+      } catch (err) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Apply';
+        showToast('Application failed: ' + err.message, 'error');
+      }
+    };
+
+    async function loadApplications() {
+      const q = query(collection(db, 'applications'), where('userId', '==', currentUser.uid), orderBy('appliedAt', 'desc'));
+      const snap = await getDocs(q);
+      const el = document.getElementById('applicationsList');
+      if (snap.empty) {
+        el.innerHTML = `<div class="empty-state"><i class="fa-solid fa-folder-open"></i><p>You haven't applied to any jobs yet.</p></div>`;
+        return;
+      }
+      el.innerHTML = snap.docs.map(d => {
+        const a = d.data();
+        return `
+          <div class="application-item">
+            <div class="app-logo">${a.company.charAt(0)}</div>
+            <div class="app-info">
+              <div class="app-title">${a.jobTitle}</div>
+              <div class="app-company">${a.company}</div>
+              <div class="app-date"><i class="fa-regular fa-calendar"></i> Applied ${formatDate(a.appliedAt)}</div>
+            </div>
+            <div class="app-status status-${a.status.toLowerCase()}">${a.status}</div>
+          </div>`;
+      }).join('');
+    }
+
+    // Search
+    document.getElementById('jobSearch').addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase();
+      let filtered = allJobs.filter(j =>
+        j.title.toLowerCase().includes(q) ||
+        j.company.toLowerCase().includes(q) ||
+        j.location.toLowerCase().includes(q)
+      );
+      if (activeFilter !== 'all') filtered = filtered.filter(j => j.type === activeFilter);
+      renderJobs(filtered);
+    });
+
+    window.filterJobs = (type, btn) => {
+      activeFilter = type;
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      const q = document.getElementById('jobSearch').value.toLowerCase();
+      let filtered = type === 'all' ? allJobs : allJobs.filter(j => j.type === type);
+      if (q) filtered = filtered.filter(j =>
+        j.title.toLowerCase().includes(q) || j.company.toLowerCase().includes(q)
+      );
+      renderJobs(filtered);
+    };
+
+    window.openModal = (job) => {
+      document.getElementById('modalContent').innerHTML = `
+        <div class="modal-header">
+          <div class="jc-logo modal-logo" style="width:56px;height:56px;font-size:1.5rem">${job.company.charAt(0)}</div>
+          <div>
+            <h2>${job.title}</h2>
+            <div class="jc-company">${job.company}</div>
+          </div>
+        </div>
+        <div class="modal-meta">
+          <span><i class="fa-solid fa-location-dot"></i> ${job.location}</span>
+          <span><i class="fa-solid fa-sack-dollar"></i> ${job.salary}</span>
+          <span><i class="fa-solid fa-tag"></i> ${job.type || 'Full-time'}</span>
+          <span><i class="fa-solid fa-layer-group"></i> ${job.experience || 'Mid Level'}</span>
+        </div>
+        <div class="modal-desc">
+          <h4>Job Description</h4>
+          <p>${job.description}</p>
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-ghost" onclick="closeModal()">Close</button>
+          <button class="btn ${appliedJobIds.has(job.id) ? 'btn-applied' : 'btn-primary'}" 
+            ${appliedJobIds.has(job.id) ? 'disabled' : ''}
+            onclick="applyJob('${job.id}','${job.title}','${job.company}','${job.employerId || ''}');closeModal()">
+            ${appliedJobIds.has(job.id) ? '<i class="fa-solid fa-check"></i> Applied' : '<i class="fa-solid fa-paper-plane"></i> Apply Now'}
+          </button>
+        </div>`;
+      document.getElementById('modalOverlay').classList.remove('hidden');
+      setTimeout(() => document.getElementById('modalCard').style.transform = 'scale(1)', 10);
+    };
+
+    window.closeModal = () => {
+      document.getElementById('modalOverlay').classList.add('hidden');
+    };
+
+    document.getElementById('modalOverlay').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('modalOverlay')) closeModal();
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await signOut(auth);
+      window.location.href = 'login.html';
+    });
+
+    function formatDate(ts) {
+      if (!ts) return 'Recently';
+      const d = ts.toDate ? ts.toDate() : new Date(ts);
+      return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    function showToast(msg, type='success') {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = `toast show ${type}`;
+      setTimeout(() => { t.className = 'toast hidden'; }, 3500);
+    }
+
+    // Load applications when switching tabs
+    window.onSectionChange = loadApplications;
+  </script>
+
+  <script>
+    window.showSection = (name, link) => {
+      document.querySelectorAll('.dash-section').forEach(s => s.classList.add('hidden'));
+      document.getElementById(`section-${name}`).classList.remove('hidden');
+      document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+      if (link) link.classList.add('active');
+      if (name === 'applications' && window.onSectionChange) window.onSectionChange();
+      document.getElementById('sidebar').classList.remove('sidebar-open');
+      document.getElementById('sidebarOverlay').classList.remove('active');
+    };
+
+    document.getElementById('sidebarToggle').addEventListener('click', () => {
+      document.getElementById('sidebar').classList.toggle('sidebar-open');
+      document.getElementById('sidebarOverlay').classList.toggle('active');
+    });
+    document.getElementById('sidebarOverlay').addEventListener('click', () => {
+      document.getElementById('sidebar').classList.remove('sidebar-open');
+      document.getElementById('sidebarOverlay').classList.remove('active');
+    });
+  </script>
+</body>
+</html>

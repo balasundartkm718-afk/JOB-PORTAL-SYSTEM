@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NexHire — Find Your Dream Career</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+</head>
+<body class="landing-body">
+
+  <!-- Animated Background -->
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-brand">
+      <i class="fa-solid fa-bolt-lightning brand-icon"></i>
+      <span>NexHire</span>
+    </div>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#stats">Stats</a>
+      <a href="login.html" class="btn btn-ghost">Sign In</a>
+      <a href="register.html" class="btn btn-primary">Get Started</a>
+    </div>
+    <button class="hamburger" id="hamburger"><i class="fa fa-bars"></i></button>
+  </nav>
+
+  <!-- Mobile Nav -->
+  <div class="mobile-nav" id="mobileNav">
+    <a href="#features">Features</a>
+    <a href="#stats">Stats</a>
+    <a href="login.html">Sign In</a>
+    <a href="register.html">Get Started</a>
+  </div>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-badge"><i class="fa-solid fa-circle-dot pulse-dot"></i> 12,000+ Active Jobs Live</div>
+    <h1 class="hero-title">
+      Connect Talent<br/>
+      <span class="gradient-text">With Opportunity</span>
+    </h1>
+    <p class="hero-subtitle">
+      NexHire bridges ambitious professionals with industry-leading companies.<br/>
+      Your next chapter starts with a single click.
+    </p>
+    <div class="hero-cta">
+      <a href="register.html?role=jobseeker" class="btn btn-primary btn-large">
+        <i class="fa-solid fa-magnifying-glass"></i> Find Jobs
+      </a>
+      <a href="register.html?role=employer" class="btn btn-outline btn-large">
+        <i class="fa-solid fa-building"></i> Post a Job
+      </a>
+    </div>
+
+    <!-- Floating Job Cards -->
+    <div class="floating-cards">
+      <div class="job-float-card card-1">
+        <div class="jfc-icon" style="background:#6366f1"><i class="fa-brands fa-google"></i></div>
+        <div>
+          <div class="jfc-title">UX Designer</div>
+          <div class="jfc-company">Google · Remote</div>
+        </div>
+        <div class="jfc-salary">$120k</div>
+      </div>
+      <div class="job-float-card card-2">
+        <div class="jfc-icon" style="background:#f59e0b"><i class="fa-brands fa-amazon"></i></div>
+        <div>
+          <div class="jfc-title">Backend Engineer</div>
+          <div class="jfc-company">Amazon · Seattle</div>
+        </div>
+        <div class="jfc-salary">$145k</div>
+      </div>
+      <div class="job-float-card card-3">
+        <div class="jfc-icon" style="background:#10b981"><i class="fa-brands fa-apple"></i></div>
+        <div>
+          <div class="jfc-title">iOS Developer</div>
+          <div class="jfc-company">Apple · Cupertino</div>
+        </div>
+        <div class="jfc-salary">$160k</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="stats-section" id="stats">
+    <div class="stat-item">
+      <div class="stat-number">50K+</div>
+      <div class="stat-label">Job Seekers</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <div class="stat-number">8K+</div>
+      <div class="stat-label">Companies</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <div class="stat-number">12K+</div>
+      <div class="stat-label">Active Jobs</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <div class="stat-number">95%</div>
+      <div class="stat-label">Success Rate</div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features-section" id="features">
+    <div class="section-label">Why NexHire</div>
+    <h2 class="section-title">Built for the Modern<br/><span class="gradient-text">Job Market</span></h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon" style="--c:#6366f1"><i class="fa-solid fa-shield-halved"></i></div>
+        <h3>Verified Employers</h3>
+        <p>Every company is verified by our team, ensuring you apply to legitimate, trustworthy opportunities.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="--c:#f59e0b"><i class="fa-solid fa-bolt"></i></div>
+        <h3>Instant Matching</h3>
+        <p>Smart algorithms match your skills with relevant jobs in real-time for faster, smarter job hunting.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="--c:#10b981"><i class="fa-solid fa-chart-line"></i></div>
+        <h3>Track Applications</h3>
+        <p>Monitor every application status in one clean dashboard. Never lose track of an opportunity.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="--c:#ec4899"><i class="fa-solid fa-globe"></i></div>
+        <h3>Remote-First</h3>
+        <p>Discover thousands of remote roles from global companies. Work from anywhere in the world.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="cta-glass">
+      <h2>Ready to Take the Leap?</h2>
+      <p>Join thousands of professionals who found their dream job through NexHire.</p>
+      <a href="register.html" class="btn btn-primary btn-large">
+        Create Free Account <i class="fa-solid fa-arrow-right"></i>
+      </a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-brand">
+      <i class="fa-solid fa-bolt-lightning brand-icon"></i> NexHire
+    </div>
+    <div class="footer-text">© 2025 NexHire. DBMS Mini Project.</div>
+  </footer>
+
+  <script>
+    // Hamburger menu toggle
+    document.getElementById('hamburger').addEventListener('click', () => {
+      document.getElementById('mobileNav').classList.toggle('open');
+    });
+
+    // Scroll animations
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.feature-card, .stat-item').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NexHire — Employer Dashboard</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+</head>
+<body class="dashboard-body">
+
+  <div class="bg-orbs dashboard-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+  </div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <i class="fa-solid fa-bolt-lightning brand-icon"></i>
+      <span>NexHire</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="#overview" class="sidebar-link active" onclick="showSection('overview',this)">
+        <i class="fa-solid fa-gauge-high"></i> Overview
+      </a>
+      <a href="#post-job" class="sidebar-link" onclick="showSection('post-job',this)">
+        <i class="fa-solid fa-plus-circle"></i> Post a Job
+      </a>
+      <a href="#my-jobs" class="sidebar-link" onclick="showSection('my-jobs',this)">
+        <i class="fa-solid fa-briefcase"></i> My Listings
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user" id="sidebarUser">
+        <div class="su-avatar" id="suAvatar">E</div>
+        <div>
+          <div class="su-name" id="suName">Employer</div>
+          <div class="su-role">Employer</div>
+        </div>
+      </div>
+      <button class="btn-logout" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Sign Out</button>
+    </div>
+  </aside>
+
+  <!-- Mobile Top Bar -->
+  <div class="mobile-topbar">
+    <button id="sidebarToggle"><i class="fa-solid fa-bars"></i></button>
+    <div class="nav-brand"><i class="fa-solid fa-bolt-lightning brand-icon"></i> NexHire</div>
+    <div id="mobileAvatar" class="su-avatar" style="margin:0">E</div>
+  </div>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Main Content -->
+  <main class="dashboard-main">
+
+    <!-- OVERVIEW SECTION -->
+    <section id="section-overview" class="dash-section">
+      <div class="dash-header">
+        <div>
+          <h1 class="dash-title">Good to see you, <span id="empName">Employer</span> 👋</h1>
+          <p class="dash-sub">Here's what's happening with your job listings today.</p>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="dash-stats">
+        <div class="dash-stat-card">
+          <div class="dsc-icon" style="--c:#6366f1"><i class="fa-solid fa-briefcase"></i></div>
+          <div class="dsc-value" id="statJobsPosted">0</div>
+          <div class="dsc-label">Jobs Posted</div>
+        </div>
+        <div class="dash-stat-card">
+          <div class="dsc-icon" style="--c:#10b981"><i class="fa-solid fa-file-lines"></i></div>
+          <div class="dsc-value" id="statApplications">0</div>
+          <div class="dsc-label">Applications</div>
+        </div>
+        <div class="dash-stat-card">
+          <div class="dsc-icon" style="--c:#f59e0b"><i class="fa-solid fa-eye"></i></div>
+          <div class="dsc-value" id="statViews">0</div>
+          <div class="dsc-label">Total Views</div>
+        </div>
+      </div>
+
+      <!-- Recent Listings Preview -->
+      <h2 class="section-heading">Recent Listings</h2>
+      <div id="recentListings" class="jobs-grid">
+        <div class="loading-state"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading...</div>
+      </div>
+    </section>
+
+    <!-- POST JOB SECTION -->
+    <section id="section-post-job" class="dash-section hidden">
+      <div class="dash-header">
+        <h1 class="dash-title">Post a New Job</h1>
+        <p class="dash-sub">Fill in the details below to attract top candidates.</p>
+      </div>
+
+      <div class="form-card">
+        <div id="postJobMsg" class="auth-message hidden"></div>
+        <form id="postJobForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label><i class="fa-solid fa-heading"></i> Job Title *</label>
+              <input type="text" id="jobTitle" placeholder="e.g. Senior React Developer" required/>
+            </div>
+            <div class="form-group">
+              <label><i class="fa-solid fa-building"></i> Company Name *</label>
+              <input type="text" id="jobCompany" placeholder="e.g. TechCorp Inc." required/>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label><i class="fa-solid fa-location-dot"></i> Location *</label>
+              <input type="text" id="jobLocation" placeholder="e.g. New York / Remote" required/>
+            </div>
+            <div class="form-group">
+              <label><i class="fa-solid fa-indian-rupee-sign"></i> Salary Range *</label>
+              <input type="text" id="jobSalary" placeholder="e.g. ₹8–12 LPA or $80k–100k" required/>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label><i class="fa-solid fa-tag"></i> Job Type</label>
+              <select id="jobType">
+                <option value="Full-time">Full-time</option>
+                <option value="Part-time">Part-time</option>
+                <option value="Contract">Contract</option>
+                <option value="Internship">Internship</option>
+                <option value="Remote">Remote</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label><i class="fa-solid fa-layer-group"></i> Experience Level</label>
+              <select id="jobExperience">
+                <option value="Entry Level">Entry Level</option>
+                <option value="Mid Level">Mid Level</option>
+                <option value="Senior Level">Senior Level</option>
+                <option value="Manager">Manager</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label><i class="fa-solid fa-align-left"></i> Job Description *</label>
+            <textarea id="jobDescription" rows="6" placeholder="Describe the role, responsibilities, and requirements..." required></textarea>
+          </div>
+          <div class="form-actions">
+            <button type="reset" class="btn btn-ghost">Clear Form</button>
+            <button type="submit" class="btn btn-primary" id="postJobBtn">
+              <i class="fa-solid fa-paper-plane"></i> Post Job
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- MY JOBS SECTION -->
+    <section id="section-my-jobs" class="dash-section hidden">
+      <div class="dash-header">
+        <h1 class="dash-title">My Job Listings</h1>
+        <p class="dash-sub">All jobs you've posted. Manage them here.</p>
+      </div>
+      <div id="myJobsList" class="jobs-grid">
+        <div class="loading-state"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading...</div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast hidden"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, collection, addDoc, query, where, getDocs, orderBy, serverTimestamp, deleteDoc }
+      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { firebaseConfig } from "./firebase-config.js";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    let currentUser = null;
+    let userJobs = [];
+
+    // Auth guard
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) { window.location.href = 'login.html'; return; }
+      const snap = await getDoc(doc(db, 'users', user.uid));
+      if (!snap.exists() || snap.data().role !== 'employer') {
+        window.location.href = 'jobseeker_dashboard.html'; return;
+      }
+      currentUser = user;
+      const name = snap.data().name || user.displayName || 'Employer';
+      document.getElementById('empName').textContent = name.split(' ')[0];
+      document.getElementById('suName').textContent = name;
+      const initial = name.charAt(0).toUpperCase();
+      document.getElementById('suAvatar').textContent = initial;
+      document.getElementById('mobileAvatar').textContent = initial;
+      loadDashboard();
+    });
+
+    async function loadDashboard() {
+      const q = query(collection(db, 'jobs'), where('employerId', '==', currentUser.uid), orderBy('createdAt', 'desc'));
+      const snap = await getDocs(q);
+      userJobs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      document.getElementById('statJobsPosted').textContent = userJobs.length;
+
+      // Get total applications
+      const appQ = query(collection(db, 'applications'), where('employerId', '==', currentUser.uid));
+      const appSnap = await getDocs(appQ);
+      document.getElementById('statApplications').textContent = appSnap.size;
+      document.getElementById('statViews').textContent = userJobs.length * 23; // simulated
+
+      renderJobGrid('recentListings', userJobs.slice(0, 3));
+      renderJobGrid('myJobsList', userJobs);
+    }
+
+    function renderJobGrid(containerId, jobs) {
+      const el = document.getElementById(containerId);
+      if (!jobs.length) {
+        el.innerHTML = `<div class="empty-state"><i class="fa-solid fa-folder-open"></i><p>No jobs posted yet. <a href="#post-job" onclick="showSection('post-job',null)">Post your first job!</a></p></div>`;
+        return;
+      }
+      el.innerHTML = jobs.map(job => `
+        <div class="job-card employer-job-card" data-id="${job.id}">
+          <div class="jc-top">
+            <div class="jc-logo">${job.company.charAt(0)}</div>
+            <div class="jc-badges">
+              <span class="badge badge-type">${job.type || 'Full-time'}</span>
+              <span class="badge badge-exp">${job.experience || 'Mid Level'}</span>
+            </div>
+          </div>
+          <h3 class="jc-title">${job.title}</h3>
+          <div class="jc-company">${job.company}</div>
+          <div class="jc-meta">
+            <span><i class="fa-solid fa-location-dot"></i> ${job.location}</span>
+            <span><i class="fa-solid fa-indian-rupee-sign"></i> ${job.salary}</span>
+          </div>
+          <p class="jc-desc">${job.description.substring(0, 100)}...</p>
+          <div class="jc-footer">
+            <span class="jc-date"><i class="fa-regular fa-calendar"></i> ${formatDate(job.createdAt)}</span>
+            <button class="btn btn-danger btn-sm" onclick="deleteJob('${job.id}')">
+              <i class="fa-solid fa-trash"></i> Delete
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Post Job Form
+    document.getElementById('postJobForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('postJobBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Posting...';
+      const msgEl = document.getElementById('postJobMsg');
+      try {
+        await addDoc(collection(db, 'jobs'), {
+          title: document.getElementById('jobTitle').value.trim(),
+          company: document.getElementById('jobCompany').value.trim(),
+          location: document.getElementById('jobLocation').value.trim(),
+          salary: document.getElementById('jobSalary').value.trim(),
+          type: document.getElementById('jobType').value,
+          experience: document.getElementById('jobExperience').value,
+          description: document.getElementById('jobDescription').value.trim(),
+          employerId: currentUser.uid,
+          createdAt: serverTimestamp()
+        });
+        showToast('Job posted successfully! 🎉');
+        msgEl.textContent = '✅ Job posted! Candidates can now apply.';
+        msgEl.className = 'auth-message success';
+        document.getElementById('postJobForm').reset();
+        await loadDashboard();
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Post Job';
+      } catch (err) {
+        msgEl.textContent = 'Error: ' + err.message;
+        msgEl.className = 'auth-message error';
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Post Job';
+      }
+    });
+
+    window.deleteJob = async (jobId) => {
+      if (!confirm('Are you sure you want to delete this job listing?')) return;
+      try {
+        await deleteDoc(doc(db, 'jobs', jobId));
+        showToast('Job deleted.');
+        await loadDashboard();
+      } catch (err) {
+        showToast('Error deleting job: ' + err.message, 'error');
+      }
+    };
+
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await signOut(auth);
+      window.location.href = 'login.html';
+    });
+
+    function formatDate(ts) {
+      if (!ts) return 'Just now';
+      const d = ts.toDate ? ts.toDate() : new Date(ts);
+      return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    function showToast(msg, type='success') {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = `toast show ${type}`;
+      setTimeout(() => { t.className = 'toast hidden'; }, 3000);
+    }
+  </script>
+
+  <script>
+    // Sidebar & Section navigation
+    window.showSection = (name, link) => {
+      document.querySelectorAll('.dash-section').forEach(s => s.classList.add('hidden'));
+      document.getElementById(`section-${name}`).classList.remove('hidden');
+      document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+      if (link) link.classList.add('active');
+      // Close mobile sidebar
+      document.getElementById('sidebar').classList.remove('sidebar-open');
+      document.getElementById('sidebarOverlay').classList.remove('active');
+    };
+
+    document.getElementById('sidebarToggle').addEventListener('click', () => {
+      document.getElementById('sidebar').classList.toggle('sidebar-open');
+      document.getElementById('sidebarOverlay').classList.toggle('active');
+    });
+    document.getElementById('sidebarOverlay').addEventListener('click', () => {
+      document.getElementById('sidebar').classList.remove('sidebar-open');
+      document.getElementById('sidebarOverlay').classList.remove('active');
+    });
+  </script>
+</body>
+</html>
